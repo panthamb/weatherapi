@@ -24,11 +24,14 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --configuration Release --no-restore
-    - name: Login to Azure ACR
-      run: |
-          az login --service-principal --username ${{ secrets.ACR_CREDENTIALS }} --password ${{ secrets.ACR_CREDENTIALS }} --tenant ${{ secrets.ACR_TENANT_ID }}
-          az acr login --name winctrcr
+    - name: 'Build and push image'
+      uses: azure/docker-login@v1
+      with:
+        login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+
     - name: Build and push Docker image
       run: |
-        docker build . -f Dockerfile -t winctrcr.azurecr.io/murty/weatherapi:latest
-        docker push winctrcr.azurecr.io/murty/weatherapi:latest
+        docker build . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/murty/weatherapi:latest
+        docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/murty/weatherapi:latest
