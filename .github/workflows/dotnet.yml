@@ -24,3 +24,9 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --configuration Release --no-restore
+    - name: Login to Azure ACR
+      run: az acr login --name winctrcr --username ${{ secrets.ACR_USERNAME }} --password ${{ secrets.ACR_PASSWORD }}
+    - name: Build and push Docker image
+      run: |
+        docker build . -f Dockerfile -t winctrcr.azurecr.io/murty/weatherapi:latest
+        docker push winctrcr.azurecr.io/murty/weatherapi:latest
