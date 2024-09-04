@@ -26,10 +26,7 @@ jobs:
       run: dotnet build --configuration Release --no-restore
     - name: Login to Azure ACR
       run: |
-          echo ${{ secrets.ACR_CREDENTIALS }} | jq -r .clientId > client_id
-          echo ${{ secrets.ACR_CREDENTIALS }} | jq -r .clientSecret > client_secret
-          echo ${{ secrets.ACR_CREDENTIALS }} | jq -r .tenantId > tenant_id
-          az login --service-principal --username $(cat client_id) --password $(cat client_secret) --tenant $(cat tenant_id)
+          az login --service-principal --username ${{ secrets.ACR_CREDENTIALS }} --password ${{ secrets.ACR_CREDENTIALS }} --tenant ${{ secrets.ACR_TENANT_ID }}
           az acr login --name winctrcr
     - name: Build and push Docker image
       run: |
